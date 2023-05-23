@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -31,7 +32,8 @@ class ProjectController extends Controller
     public function create()
     {
         $types = Type::all();
-        return view('admin.projects.create', compact('types'));
+        $technologies = Technology::all();
+        return view('admin.projects.create', compact('types', 'technologies'));
     }
 
     /**
@@ -51,9 +53,14 @@ class ProjectController extends Controller
         if (isset($data['image'])) {
             $project->image = Storage::put('uploads', $data['image']);
         }
+
         $project->save();
 
-        return to_route('admin.projects.index');
+        if (isset($data['technologies'])) { //null?
+            $project->technologies()->sync($data['technologies']);
+        }
+
+        return to_route('admin.projects.index')->with('message', 'Project created successfully');
     }
 
     /**
@@ -76,7 +83,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('admin.projects.edit', compact('project'), compact('types'));
+        $technologies = Technology::all();
+
+        return view('admin.projects.edit', compact('project', 'types', 'technologies'));
     }
 
     /**
@@ -111,9 +120,12 @@ class ProjectController extends Controller
             }
         }
 
+        $technologies = isset($data['technologies']) ? $data['technologies'] : [];
+        $project->technologies()->sync($technologies);
+
         $project->update($data);
 
-        return to_route('admin.projects.index');
+        return to_route('admin.projects.index')->with('message', 'Project edited successfully');;
     }
 
     /**
@@ -128,6 +140,6 @@ class ProjectController extends Controller
             Storage::delete($project->image);
         }
         $project->delete();
-        return to_route('admin.projects.index');
+        return to_route('admin.projects.index')->with('message', 'Project deleted successfully');;
     }
 }

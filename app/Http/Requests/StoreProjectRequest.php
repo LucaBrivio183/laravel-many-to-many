@@ -31,6 +31,7 @@ class StoreProjectRequest extends FormRequest
             'patch_version' => 'required',
             'image' => 'nullable|image|max:2048',
             'description' => 'required',
+            'technologies' => 'nullable|exists:technologies,id'
         ];
     }
 }
