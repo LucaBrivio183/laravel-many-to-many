@@ -20,7 +20,7 @@
             <h1 class="me-3">{{ $project->name }} </h1> 
             <small class="text-body-secondary">Version: {{ $project->major_version }}.{{ $project->minor_version }}.{{ $project->patch_version }}</small>
         </div> 
-        <h4>Languages: {{ $project->type?->type_name ?: 'none' }}</h4>
+        <h4>{{ $project->type?->name ?: 'none' }} Project</h4>
         <div class="h-50">
             <img src="{{asset('storage/'. $project->image)}}" alt="{{ $project->name}}">
         </div>
